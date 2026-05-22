@@ -1,0 +1,1076 @@
+{
+  "name": "🚀 Social Media Content Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ⚠️ BACA SEBELUM PAKAI\n\n### 1. Environment Variables\nSettings → Variables → tambahkan:\n```\nOPENAI_API_KEY    → openai.com\nFB_ACCESS_TOKEN   → Facebook Page Token\nFB_PAGE_ID        → ID Facebook Page\nIG_USER_ID        → Instagram Business ID\nLI_ACCESS_TOKEN   → LinkedIn Access Token\nLI_PERSON_ID      → urn:li:person:xxx\nAYRSHARE_API_KEY  → ayrshare.com (gratis)\n```\n\n### 2. Credentials (Settings → Credentials)\n- Gmail OAuth2 Account\n- Google Sheets OAuth2 Account\n\n### 3. Edit node **Set Variables**\nUbah: `approver_email`, `report_email`, `topic`\n\n### 4. Edit **Google Sheets: Log**\nGanti `GANTI_SPREADSHEET_ID` dengan ID sheet kamu\n\n### 5. Cara test\nKlik **Test Workflow** → cek email masuk",
+        "height": 440,
+        "width": 420,
+        "color": 4
+      },
+      "id": "61d9719b-897b-4dfa-981f-24242887bb03",
+      "name": "📌 SETUP INSTRUCTIONS",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        200,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🤖 KONTEN GENERATION\n\n**IF: AI atau Manual**\n- `content_type = AI` → OpenAI generate otomatis\n- `content_type = manual` → edit node **Set: Manual Content**\n\n**Untuk ganti model AI:**\nEdit node `HTTP: OpenAI Generate`\nGanti `gpt-4o-mini` → `gpt-4o` (lebih bagus, lebih mahal)\n\n**Untuk pakai Claude:**\nGanti URL ke `https://api.anthropic.com/v1/messages`\ndan sesuaikan format body",
+        "height": 280,
+        "width": 360,
+        "color": 5
+      },
+      "id": "6e6906d2-c524-487c-8761-b9f7e8b0022d",
+      "name": "🤖 KONTEN NOTE",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        700,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ✉️ APPROVAL SYSTEM\n\n**Cara kerja:**\n1. Email berisi preview konten dikirim ke approver\n2. Workflow **pause** (Wait node)\n3. Approver klik **SETUJU** → lanjut publish\n4. Approver klik **REVISI** → AI revise otomatis\n5. Email dikirim ulang untuk review ke-2\n6. Setelah 2x revisi, workflow berhenti\n\n**Edit email approver:**\nNode `Set Variables` → field `approver_email`\n\n**Timeout:**\nJika tidak diklik 3 hari → workflow timeout",
+        "height": 300,
+        "width": 360,
+        "color": 3
+      },
+      "id": "a7c3f245-c584-483e-8216-d04848325d0b",
+      "name": "✉️ APPROVAL NOTE",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1620,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 📤 PUBLISHING\n\n**Platform & API:**\n- Instagram → Facebook Graph API v21.0 (2 step)\n- LinkedIn → ugcPosts API v2\n- Facebook → Graph API feed endpoint\n- Threads → Ayrshare API (daftar gratis)\n\n**Image URL:**\nEdit node `Code: Prepare Publish`\nGanti `imageUrl` dengan URL gambar asli\n\n**Error publish?**\nCek env variables sudah benar di Settings\nCek token belum expired (FB token: 60 hari)\n\n**Ayrshare:**\nayrshare.com → Free tier 3 platform",
+        "height": 300,
+        "width": 360,
+        "color": 5
+      },
+      "id": "0b06f53b-0bd0-4fc2-9fd4-d57bd7eac809",
+      "name": "📤 PUBLISH NOTE",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2320,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 📊 REPORTING\n\n**Setelah publish:**\n1. Email report → tim@email.com\n2. Data di-log ke Google Sheets\n\n**Setup Sheets:**\n- Buat spreadsheet baru\n- Salin ID dari URL (bagian setelah /d/)\n- Paste di node `Google Sheets: Log`\n- Nama sheet: `Content Log`\n\n**Kolom yang di-log:**\nDate, Approval ID, Topic, Content Type,\nIG/LI/FB/Threads Post ID, Status,\nRevision Count, Publish Time, IG Preview",
+        "height": 300,
+        "width": 360,
+        "color": 2
+      },
+      "id": "17f096bf-266a-4545-b1b2-45e251305bc0",
+      "name": "📊 REPORTING NOTE",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3820,
+        40
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "5d608914-8210-4f02-a441-e23829fa844d",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        220,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "42d5f2c6-f09b-4df9-8907-1b1ea68bf201",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        220,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c9381c3f-225b-4a8c-a755-66947d5e9106",
+              "name": "topic",
+              "value": "Tips produktivitas kerja dari rumah di era digital",
+              "type": "string"
+            },
+            {
+              "id": "d6307612-0408-48b8-93b2-2976b77c70c4",
+              "name": "tone",
+              "value": "informatif, relatable, sedikit humoris",
+              "type": "string"
+            },
+            {
+              "id": "50538822-028a-4d24-b0bc-362919c94527",
+              "name": "content_type",
+              "value": "AI",
+              "type": "string"
+            },
+            {
+              "id": "eb9b98ba-0e03-44cf-adfa-6da321c10e78",
+              "name": "approval_id",
+              "value": "={{ $now.toMillis() }}",
+              "type": "string"
+            },
+            {
+              "id": "049706a6-1034-4cd5-81d5-bd7c038795eb",
+              "name": "approver_email",
+              "value": "approver@perusahaan.com",
+              "type": "string"
+            },
+            {
+              "id": "36b0acce-cc5e-4d42-b253-6e3180319ffa",
+              "name": "report_email",
+              "value": "tim@perusahaan.com",
+              "type": "string"
+            },
+            {
+              "id": "ade6552e-eefb-489c-a1c7-cefe906ae611",
+              "name": "revision_count",
+              "value": 0,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e364d681-a07c-459c-a9f2-71add51b2cb3",
+      "name": "Set Variables",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        460,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "4979e280-b8d4-4dfb-b4e4-f602dfe78b84",
+              "leftValue": "={{ $json.content_type }}",
+              "rightValue": "AI",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "26aa329f-d4fd-4773-b0a1-8d039e2d1d28",
+      "name": "IF: AI atau Manual",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        700,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build prompt untuk OpenAI\nconst d = $('Set Variables').first().json;\nconst topic = d.topic || 'Tips produktivitas';\nconst tone  = d.tone  || 'informatif';\n\nconst prompt = `Kamu adalah social media copywriter profesional untuk brand Indonesia.\n\nBuat konten social media tentang: ${topic}\nNada tulisan: ${tone}\nTarget audiens: profesional muda Indonesia usia 25-35 tahun\n\nAturan:\n- Instagram: maks 2200 karakter, 3-5 emoji, 8-10 hashtag campuran besar & kecil\n- LinkedIn: maks 1300 karakter, profesional, awali dengan hook kuat (statistik/pertanyaan), minimal hashtag\n- Facebook: maks 500 karakter, conversational, akhiri dengan pertanyaan untuk engagement\n\nPENTING: Output HANYA JSON valid, tanpa markdown, tanpa teks lain:\n{\n  \"instagram\": \"full caption instagram disini\",\n  \"linkedin\": \"full post linkedin disini\",\n  \"facebook\": \"full post facebook disini\",\n  \"image_prompt\": \"visual description for designer in English\"\n}`;\n\nreturn [{ json: { ...d, prompt } }];"
+      },
+      "id": "a6627fda-69ad-465c-a5c4-35e18a0dc570",
+      "name": "Code: Build Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        940,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.OPENAI_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"model\": \"gpt-4o-mini\", \"messages\": [{\"role\": \"system\", \"content\": \"Kamu adalah social media copywriter profesional Indonesia. Selalu output HANYA JSON yang diminta, tanpa teks tambahan.\"}, {\"role\": \"user\", \"content\": \"={{ $json.prompt }}\"}], \"max_tokens\": 1800, \"temperature\": 0.75}",
+        "options": {
+          "retry": {
+            "enabled": true,
+            "maxTries": 3,
+            "waitBetweenTries": 5000
+          },
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "d326c3c3-bf84-4acd-a394-b323dbae154a",
+      "name": "HTTP: OpenAI Generate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1180,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "721bf2b4-9287-4ad3-b832-f8ab3291d763",
+              "name": "choices",
+              "value": "=[{\"message\":{\"content\":\"{\\\"instagram\\\": \\\"[GANTI] Caption Instagram kamu disini. Tambahkan emoji dan hashtag yang relevan #tips #produktivitas\\\",\\\"linkedin\\\": \\\"[GANTI] Post LinkedIn kamu disini. Buat profesional dan tambahkan insight menarik.\\\",\\\"facebook\\\": \\\"[GANTI] Post Facebook kamu disini. Tambahkan pertanyaan di akhir untuk engagement!\\\",\\\"image_prompt\\\": \\\"[GANTI] Deskripsi gambar untuk desainer dalam Bahasa Inggris\\\"}\"}}]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7cbd747b-b0e9-490a-928b-09dbf7097135",
+      "name": "Set: Manual Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        940,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse output dari OpenAI menjadi struktur standar\nconst item = $input.first().json;\nlet rawContent;\n\n// Tangani berbagai format response\nif (item.choices && item.choices[0] && item.choices[0].message) {\n  rawContent = item.choices[0].message.content;\n} else if (item.content) {\n  rawContent = typeof item.content === 'string' ? item.content : JSON.stringify(item.content);\n} else {\n  rawContent = JSON.stringify(item);\n}\n\n// Parse JSON dari response\nlet content;\ntry {\n  content = JSON.parse(rawContent);\n} catch(e1) {\n  try {\n    const m = rawContent.match(/\\{[\\s\\S]*\\}/);\n    if (!m) throw new Error('No JSON block found');\n    content = JSON.parse(m[0]);\n  } catch(e2) {\n    throw new Error('Gagal parse konten AI. Cek format prompt. Response: ' + rawContent.substring(0, 300));\n  }\n}\n\n// Ambil variabel dari Set Variables\nlet vars = {};\ntry { vars = $('Set Variables').first().json; } catch(e) {}\n\nreturn [{\n  json: {\n    topic:          vars.topic          || 'Topik Konten',\n    tone:           vars.tone           || 'informatif',\n    approval_id:    vars.approval_id    || String(Date.now()),\n    approver_email: vars.approver_email || 'approver@email.com',\n    report_email:   vars.report_email   || 'tim@email.com',\n    instagram_text: content.instagram   || '',\n    linkedin_text:  content.linkedin    || '',\n    facebook_text:  content.facebook    || '',\n    image_prompt:   content.image_prompt|| '',\n    generated_at:   new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),\n    status:         'pending_approval',\n    revision_count: 0\n  }\n}];"
+      },
+      "id": "87878856-6d63-45a1-96fd-42f651e61c73",
+      "name": "Code: Parse Konten",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.approver_email }}",
+        "subject": "=[REVIEW] Konten Social Media: {{ $json.topic }} | ID: {{ $json.approval_id }}",
+        "emailType": "html",
+        "message": "=<div style=\"font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden\">\n<div style=\"background:linear-gradient(135deg,#1e40af,#3b82f6);color:white;padding:24px 20px\">\n<h2 style=\"margin:0;font-size:20px;font-weight:700\">&#128203; Review Konten Social Media</h2>\n<p style=\"margin:6px 0 0;opacity:0.85;font-size:13px\">Persetujuan diperlukan sebelum konten dipublish ke semua platform</p>\n</div>\n<div style=\"padding:16px 20px;background:#f8fafc;border-bottom:1px solid #e2e8f0;font-size:13px\">\n<table style=\"width:100%;border-collapse:collapse\">\n<tr><td style=\"padding:3px 12px 3px 0;color:#64748b;width:100px\">Topik</td><td><strong>{{ $json.topic }}</strong></td></tr>\n<tr><td style=\"padding:3px 12px 3px 0;color:#64748b\">Approval ID</td><td style=\"font-family:monospace;font-size:11px\">{{ $json.approval_id }}</td></tr>\n<tr><td style=\"padding:3px 12px 3px 0;color:#64748b\">Dibuat</td><td>{{ $json.generated_at }}</td></tr>\n<tr><td style=\"padding:3px 12px 3px 0;color:#64748b\">Revisi ke</td><td>{{ $json.revision_count }}</td></tr>\n</table>\n</div>\n<div style=\"padding:20px\">\n<div style=\"margin-bottom:18px\">\n<div style=\"font-weight:700;color:#e1306c;margin-bottom:8px;display:flex;align-items:center\">&#128247; Instagram</div>\n<div style=\"background:#fff8f9;border:1px solid #fca5a5;border-radius:8px;padding:14px;font-size:13px;line-height:1.6;white-space:pre-wrap;color:#1e293b\">{{ $json.instagram_text }}</div>\n</div>\n<div style=\"margin-bottom:18px\">\n<div style=\"font-weight:700;color:#0077b5;margin-bottom:8px\">&#128101; LinkedIn</div>\n<div style=\"background:#f0f7ff;border:1px solid #93c5fd;border-radius:8px;padding:14px;font-size:13px;line-height:1.6;white-space:pre-wrap;color:#1e293b\">{{ $json.linkedin_text }}</div>\n</div>\n<div style=\"margin-bottom:18px\">\n<div style=\"font-weight:700;color:#1877f2;margin-bottom:8px\">&#128172; Facebook</div>\n<div style=\"background:#eff6ff;border:1px solid #a5b4fc;border-radius:8px;padding:14px;font-size:13px;line-height:1.6;white-space:pre-wrap;color:#1e293b\">{{ $json.facebook_text }}</div>\n</div>\n</div>\n<div style=\"padding:20px;background:#f1f5f9;border-top:1px solid #e2e8f0;text-align:center\">\n<p style=\"margin:0 0 14px;color:#475569;font-size:13px;font-weight:600\">Pilih tindakan untuk konten ini:</p>\n<a href=\"{{ $resumeWebhookUrl }}?status=approved\" style=\"display:inline-block;background:#16a34a;color:white;padding:13px 28px;text-decoration:none;border-radius:8px;font-weight:700;font-size:14px;margin:4px 6px;letter-spacing:0.3px\">&#10003; SETUJU &amp; PUBLISH</a>\n<a href=\"{{ $resumeWebhookUrl }}?status=revise&amp;revision_mode=ai&amp;note=Perlu+diperbaiki+dan+lebih+menarik\" style=\"display:inline-block;background:#dc2626;color:white;padding:13px 28px;text-decoration:none;border-radius:8px;font-weight:700;font-size:14px;margin:4px 6px;letter-spacing:0.3px\">&#9998; PERLU REVISI</a>\n<p style=\"margin:14px 0 0;color:#94a3b8;font-size:11px\">Link otomatis kadaluarsa dalam 3 hari &bull; Jangan forward email ini &bull; Workflow ID: {{ $execution.id }}</p>\n</div>\n</div>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "62ed7e05-e205-43a9-b9dd-56a0827ff190",
+      "name": "Gmail: Kirim Approval",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1660,
+        560
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GANTI_ID_CREDENTIAL_GMAIL",
+          "name": "Gmail Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "options": {
+          "limitWaitTime": true,
+          "limitType": "afterTimeInterval",
+          "resumeAmount": 3,
+          "resumeUnit": "days"
+        }
+      },
+      "id": "1f32e9f5-e313-4a24-810b-72c688160f30",
+      "name": "Wait: Tunggu Approval",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1900,
+        560
+      ],
+      "webhookId": "a32a540a-096f-4113-9d7a-33dc8842f146"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "62f16200-7daa-468e-82b6-f037eeb1be8a",
+              "leftValue": "={{ $json.query.status }}",
+              "rightValue": "approved",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7d039871-00b6-48e3-939b-a80ec8ed0fc6",
+      "name": "IF: Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2140,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ambil konten final (revisi atau original)\nlet content = null;\n\n// Coba konten revisi terlebih dahulu\ntry {\n  const rev = $('Code: Parse Revision').first().json;\n  if (rev && rev.instagram_text && rev.instagram_text.length > 5) {\n    content = rev;\n  }\n} catch(e) { /* Revisi tidak berjalan, gunakan original */ }\n\n// Fallback ke konten original\nif (!content) {\n  try {\n    content = $('Code: Parse Konten').first().json;\n  } catch(e) {\n    throw new Error('Tidak dapat menemukan konten untuk dipublish. Pastikan workflow berjalan dengan benar.');\n  }\n}\n\n// ⚠️ GANTI image_url dengan URL gambar asli kamu\n// Opsi 1: URL statis yang kamu generate dari Canva/tools lain\n// Opsi 2: Tambahkan node generate gambar (DALL-E, Stability AI) sebelum node ini\nconst imageUrl = 'https://via.placeholder.com/1080x1080/4F46E5/FFFFFF?text=' + \n                 encodeURIComponent((content.topic || 'Content').substring(0, 20));\n\nreturn [{\n  json: {\n    ...content,\n    image_url:      imageUrl,\n    publish_source: (content.revision_count || 0) > 0 ? 'revised' : 'original',\n    publish_time:   new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })\n  }\n}];"
+      },
+      "id": "2572f36a-538e-4a11-9db6-aa27019496db",
+      "name": "Code: Prepare Publish",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2380,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.IG_USER_ID }}/media",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"caption\": \"={{ $json.instagram_text }}\", \"image_url\": \"={{ $json.image_url }}\", \"access_token\": \"={{ $env.FB_ACCESS_TOKEN }}\"}",
+        "options": {}
+      },
+      "id": "9e9ba6e6-bfe0-4ecd-b9f1-71e711a57e5c",
+      "name": "HTTP: Instagram Create Container",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2620,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.IG_USER_ID }}/media_publish",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"creation_id\": \"={{ $json.id }}\", \"access_token\": \"={{ $env.FB_ACCESS_TOKEN }}\"}",
+        "options": {}
+      },
+      "id": "0c7a312e-856f-4df7-937d-723a436014b6",
+      "name": "HTTP: Instagram Publish",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2860,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.linkedin.com/v2/ugcPosts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.LI_ACCESS_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "LinkedIn-Version",
+              "value": "202401"
+            },
+            {
+              "name": "X-Restli-Protocol-Version",
+              "value": "2.0.0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"author\": \"=urn:li:person:{{ $env.LI_PERSON_ID }}\", \"lifecycleState\": \"PUBLISHED\", \"specificContent\": {\"com.linkedin.ugc.ShareContent\": {\"shareCommentary\": {\"text\": \"={{ $('Code: Prepare Publish').first().json.linkedin_text }}\"}, \"shareMediaCategory\": \"NONE\"}}, \"visibility\": {\"com.linkedin.ugc.MemberNetworkVisibility\": \"PUBLIC\"}}",
+        "options": {}
+      },
+      "id": "74205bbf-3e60-470b-9f92-03f4ec189850",
+      "name": "HTTP: LinkedIn Publish",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.FB_PAGE_ID }}/feed",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"message\": \"={{ $('Code: Prepare Publish').first().json.facebook_text }}\", \"access_token\": \"={{ $env.FB_ACCESS_TOKEN }}\"}",
+        "options": {}
+      },
+      "id": "72386db8-2354-456a-b5c8-f544e38087dc",
+      "name": "HTTP: Facebook Publish",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3340,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://app.ayrshare.com/api/post",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.AYRSHARE_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"post\": \"={{ $('Code: Prepare Publish').first().json.instagram_text }}\", \"platforms\": [\"threads\"]}",
+        "options": {}
+      },
+      "id": "0c7e154c-8433-4a40-a828-ddfdc8e6fd22",
+      "name": "HTTP: Threads Ayrshare",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3580,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Code: Prepare Publish').first().json.report_email }}",
+        "subject": "=✅ Konten Berhasil Dipublish - {{ $('Code: Prepare Publish').first().json.topic }} | {{ $now.format('dd MMM yyyy') }}",
+        "emailType": "html",
+        "message": "=<div style=\"font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden\">\n<div style=\"background:linear-gradient(135deg,#16a34a,#22c55e);color:white;padding:24px 20px\">\n<h2 style=\"margin:0;font-size:20px;font-weight:700\">&#10003; Konten Berhasil Dipublish!</h2>\n<p style=\"margin:6px 0 0;opacity:0.85;font-size:13px\">Semua platform berhasil diupdate secara otomatis</p>\n</div>\n<div style=\"padding:20px\">\n<h3 style=\"margin:0 0 12px;font-size:15px;color:#1e293b\">Ringkasan Konten</h3>\n<table style=\"width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px\">\n<tr style=\"background:#f8fafc\"><td style=\"padding:10px;border:1px solid #e2e8f0;color:#64748b;width:140px\">Topik</td><td style=\"padding:10px;border:1px solid #e2e8f0;font-weight:600\">{{ $('Code: Prepare Publish').first().json.topic }}</td></tr>\n<tr><td style=\"padding:10px;border:1px solid #e2e8f0;color:#64748b\">Approval ID</td><td style=\"padding:10px;border:1px solid #e2e8f0;font-family:monospace;font-size:11px\">{{ $('Code: Prepare Publish').first().json.approval_id }}</td></tr>\n<tr style=\"background:#f8fafc\"><td style=\"padding:10px;border:1px solid #e2e8f0;color:#64748b\">Waktu Publish</td><td style=\"padding:10px;border:1px solid #e2e8f0\">{{ $('Code: Prepare Publish').first().json.publish_time }}</td></tr>\n<tr><td style=\"padding:10px;border:1px solid #e2e8f0;color:#64748b\">Revisi</td><td style=\"padding:10px;border:1px solid #e2e8f0\">{{ $('Code: Prepare Publish').first().json.revision_count }}x</td></tr>\n<tr style=\"background:#f8fafc\"><td style=\"padding:10px;border:1px solid #e2e8f0;color:#64748b\">Sumber</td><td style=\"padding:10px;border:1px solid #e2e8f0\">{{ $('Code: Prepare Publish').first().json.publish_source }}</td></tr>\n</table>\n<h3 style=\"margin:0 0 12px;font-size:15px;color:#1e293b\">Status Publish per Platform</h3>\n<table style=\"width:100%;border-collapse:collapse;font-size:13px\">\n<tr style=\"background:#1e40af;color:white\">\n<th style=\"padding:10px;text-align:left;border:1px solid #1e40af\">Platform</th>\n<th style=\"padding:10px;text-align:left;border:1px solid #1e40af\">Status</th>\n<th style=\"padding:10px;text-align:left;border:1px solid #1e40af\">Post ID</th>\n</tr>\n<tr><td style=\"padding:10px;border:1px solid #e2e8f0\">&#128247; Instagram</td><td style=\"padding:10px;border:1px solid #e2e8f0;color:#16a34a;font-weight:600\">Published</td><td style=\"padding:10px;border:1px solid #e2e8f0;font-family:monospace;font-size:11px\">{{ $('HTTP: Instagram Publish').first().json.id }}</td></tr>\n<tr style=\"background:#f8fafc\"><td style=\"padding:10px;border:1px solid #e2e8f0\">&#128101; LinkedIn</td><td style=\"padding:10px;border:1px solid #e2e8f0;color:#16a34a;font-weight:600\">Published</td><td style=\"padding:10px;border:1px solid #e2e8f0;font-family:monospace;font-size:11px\">{{ $('HTTP: LinkedIn Publish').first().json.id }}</td></tr>\n<tr><td style=\"padding:10px;border:1px solid #e2e8f0\">&#128172; Facebook</td><td style=\"padding:10px;border:1px solid #e2e8f0;color:#16a34a;font-weight:600\">Published</td><td style=\"padding:10px;border:1px solid #e2e8f0;font-family:monospace;font-size:11px\">{{ $('HTTP: Facebook Publish').first().json.id }}</td></tr>\n<tr style=\"background:#f8fafc\"><td style=\"padding:10px;border:1px solid #e2e8f0\">&#9764; Threads</td><td style=\"padding:10px;border:1px solid #e2e8f0;color:#16a34a;font-weight:600\">Published</td><td style=\"padding:10px;border:1px solid #e2e8f0;font-family:monospace;font-size:11px\">{{ ($('HTTP: Threads Ayrshare').first().json.postIds && $('HTTP: Threads Ayrshare').first().json.postIds[0]) || $('HTTP: Threads Ayrshare').first().json.id || '-' }}</td></tr>\n</table>\n</div>\n<div style=\"padding:16px 20px;background:#f0fdf4;border-top:1px solid #bbf7d0;text-align:center\">\n<p style=\"margin:0;color:#166534;font-size:12px\">Otomatis digenerate oleh n8n Social Media Automation &bull; {{ $now.format('dd MMM yyyy, HH:mm') }} WIB</p>\n</div>\n</div>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "1725ff4c-b1c4-445e-99c3-4b9f5f4db582",
+      "name": "Gmail: Send Report",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3820,
+        340
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GANTI_ID_CREDENTIAL_GMAIL",
+          "name": "Gmail Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "GANTI_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Content Log",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $now.format('yyyy-MM-dd HH:mm') }}",
+            "Approval_ID": "={{ $('Code: Prepare Publish').first().json.approval_id }}",
+            "Topic": "={{ $('Code: Prepare Publish').first().json.topic }}",
+            "Content_Type": "={{ $('Set Variables').first().json.content_type }}",
+            "IG_Post_ID": "={{ $('HTTP: Instagram Publish').first().json.id }}",
+            "LI_Post_ID": "={{ $('HTTP: LinkedIn Publish').first().json.id }}",
+            "FB_Post_ID": "={{ $('HTTP: Facebook Publish').first().json.id }}",
+            "Threads_Post_ID": "={{ ($('HTTP: Threads Ayrshare').first().json.postIds && $('HTTP: Threads Ayrshare').first().json.postIds[0]) || '' }}",
+            "IG_Preview": "={{ $('Code: Prepare Publish').first().json.instagram_text.substring(0, 100) }}",
+            "Publish_Status": "published",
+            "Revision_Count": "={{ $('Code: Prepare Publish').first().json.revision_count }}",
+            "Publish_Time": "={{ $('Code: Prepare Publish').first().json.publish_time }}",
+            "Publish_Source": "={{ $('Code: Prepare Publish').first().json.publish_source }}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "7251e254-1231-4a03-97c8-4ff6ff20f478",
+      "name": "Google Sheets: Log",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        3820,
+        560
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GANTI_ID_CREDENTIAL_SHEETS",
+          "name": "Google Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ambil konten sebelumnya dan buat prompt revisi\nlet prevContent = {};\ntry { prevContent = $('Code: Parse Konten').first().json; } catch(e) {}\n\n// Ambil catatan revisi dari query params webhook\nconst waitData = $input.first().json;\nlet revisionNote = 'Perlu perbaikan umum, buat lebih menarik dan engaging';\nif (waitData.query && waitData.query.note) {\n  revisionNote = decodeURIComponent(String(waitData.query.note).replace(/\\+/g, ' '));\n}\n\nconst prompt = `Revisi konten social media berikut sesuai catatan reviewer.\n\nKONTEN SAAT INI:\n\nINSTAGRAM:\n${prevContent.instagram_text || '[tidak tersedia]'}\n\nLINKEDIN:\n${prevContent.linkedin_text || '[tidak tersedia]'}\n\nFACEBOOK:\n${prevContent.facebook_text || '[tidak tersedia]'}\n\nCATATAN REVISI DARI REVIEWER:\n${revisionNote}\n\nInstruksi: Perbaiki berdasarkan catatan. Pertahankan topik dan nada yang sama.\n\nOutput HANYA JSON valid tanpa teks lain:\n{\n  \"instagram\": \"caption instagram yang sudah direvisi\",\n  \"linkedin\": \"post linkedin yang sudah direvisi\",\n  \"facebook\": \"post facebook yang sudah direvisi\",\n  \"image_prompt\": \"updated visual description in English\"\n}`;\n\nreturn [{\n  json: {\n    prompt,\n    topic:          prevContent.topic          || 'Topik',\n    tone:           prevContent.tone           || 'informatif',\n    approval_id:    prevContent.approval_id    || String(Date.now()),\n    approver_email: prevContent.approver_email || 'approver@email.com',\n    report_email:   prevContent.report_email   || 'tim@email.com',\n    revision_note:  revisionNote,\n    revision_count: (prevContent.revision_count || 0) + 1\n  }\n}];"
+      },
+      "id": "65f927c5-e010-4069-953e-f0c6b0942e77",
+      "name": "Code: Prepare Revision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2380,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.OPENAI_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"model\": \"gpt-4o-mini\", \"messages\": [{\"role\": \"system\", \"content\": \"Kamu adalah social media copywriter profesional Indonesia. Revisi konten sesuai instruksi. Output HANYA JSON.\"}, {\"role\": \"user\", \"content\": \"={{ $json.prompt }}\"}], \"max_tokens\": 1800, \"temperature\": 0.8}",
+        "options": {
+          "retry": {
+            "enabled": true,
+            "maxTries": 3,
+            "waitBetweenTries": 5000
+          },
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "7e20be06-9d42-4700-9d0a-b21d0ddca950",
+      "name": "HTTP: OpenAI Revise",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2620,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse hasil revisi dari OpenAI\nconst item = $input.first().json;\nlet rawContent;\n\nif (item.choices && item.choices[0] && item.choices[0].message) {\n  rawContent = item.choices[0].message.content;\n} else {\n  rawContent = JSON.stringify(item);\n}\n\nlet content;\ntry {\n  content = JSON.parse(rawContent);\n} catch(e) {\n  const m = rawContent.match(/\\{[\\s\\S]*\\}/);\n  if (!m) throw new Error('No JSON in revision: ' + rawContent.substring(0, 200));\n  content = JSON.parse(m[0]);\n}\n\nlet prepData = {};\ntry { prepData = $('Code: Prepare Revision').first().json; } catch(e) {}\n\nreturn [{\n  json: {\n    topic:          prepData.topic          || 'Topik',\n    tone:           prepData.tone           || 'informatif',\n    approval_id:    prepData.approval_id    || String(Date.now()),\n    approver_email: prepData.approver_email || 'approver@email.com',\n    report_email:   prepData.report_email   || 'tim@email.com',\n    instagram_text: content.instagram       || '',\n    linkedin_text:  content.linkedin        || '',\n    facebook_text:  content.facebook        || '',\n    image_prompt:   content.image_prompt    || '',\n    generated_at:   new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),\n    status:         'pending_approval_revision',\n    revision_count: prepData.revision_count || 1,\n    revision_note:  prepData.revision_note  || ''\n  }\n}];"
+      },
+      "id": "9514aa28-2554-4e73-8923-ec9440c9e901",
+      "name": "Code: Parse Revision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.approver_email }}",
+        "subject": "=[REVIEW KE-2] Konten Social Media (Sudah Direvisi): {{ $json.topic }}",
+        "emailType": "html",
+        "message": "=<div style=\"font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden\">\n<div style=\"background:linear-gradient(135deg,#1e40af,#3b82f6);color:white;padding:24px 20px\">\n<h2 style=\"margin:0;font-size:20px;font-weight:700\">&#128203; Review Konten Social Media</h2>\n<p style=\"margin:6px 0 0;opacity:0.85;font-size:13px\">Persetujuan diperlukan sebelum konten dipublish ke semua platform</p>\n</div>\n<div style=\"padding:16px 20px;background:#f8fafc;border-bottom:1px solid #e2e8f0;font-size:13px\">\n<table style=\"width:100%;border-collapse:collapse\">\n<tr><td style=\"padding:3px 12px 3px 0;color:#64748b;width:100px\">Topik</td><td><strong>{{ $json.topic }}</strong></td></tr>\n<tr><td style=\"padding:3px 12px 3px 0;color:#64748b\">Approval ID</td><td style=\"font-family:monospace;font-size:11px\">{{ $json.approval_id }}</td></tr>\n<tr><td style=\"padding:3px 12px 3px 0;color:#64748b\">Dibuat</td><td>{{ $json.generated_at }}</td></tr>\n<tr><td style=\"padding:3px 12px 3px 0;color:#64748b\">Revisi ke</td><td>{{ $json.revision_count }}</td></tr>\n</table>\n</div>\n<div style=\"padding:20px\">\n<div style=\"margin-bottom:18px\">\n<div style=\"font-weight:700;color:#e1306c;margin-bottom:8px;display:flex;align-items:center\">&#128247; Instagram</div>\n<div style=\"background:#fff8f9;border:1px solid #fca5a5;border-radius:8px;padding:14px;font-size:13px;line-height:1.6;white-space:pre-wrap;color:#1e293b\">{{ $json.instagram_text }}</div>\n</div>\n<div style=\"margin-bottom:18px\">\n<div style=\"font-weight:700;color:#0077b5;margin-bottom:8px\">&#128101; LinkedIn</div>\n<div style=\"background:#f0f7ff;border:1px solid #93c5fd;border-radius:8px;padding:14px;font-size:13px;line-height:1.6;white-space:pre-wrap;color:#1e293b\">{{ $json.linkedin_text }}</div>\n</div>\n<div style=\"margin-bottom:18px\">\n<div style=\"font-weight:700;color:#1877f2;margin-bottom:8px\">&#128172; Facebook</div>\n<div style=\"background:#eff6ff;border:1px solid #a5b4fc;border-radius:8px;padding:14px;font-size:13px;line-height:1.6;white-space:pre-wrap;color:#1e293b\">{{ $json.facebook_text }}</div>\n</div>\n</div>\n<div style=\"padding:20px;background:#f1f5f9;border-top:1px solid #e2e8f0;text-align:center\">\n<p style=\"margin:0 0 14px;color:#475569;font-size:13px;font-weight:600\">Pilih tindakan untuk konten ini:</p>\n<a href=\"{{ $resumeWebhookUrl }}?status=approved\" style=\"display:inline-block;background:#16a34a;color:white;padding:13px 28px;text-decoration:none;border-radius:8px;font-weight:700;font-size:14px;margin:4px 6px;letter-spacing:0.3px\">&#10003; SETUJU &amp; PUBLISH</a>\n<a href=\"{{ $resumeWebhookUrl }}?status=revise&amp;revision_mode=ai&amp;note=Perlu+diperbaiki+dan+lebih+menarik\" style=\"display:inline-block;background:#dc2626;color:white;padding:13px 28px;text-decoration:none;border-radius:8px;font-weight:700;font-size:14px;margin:4px 6px;letter-spacing:0.3px\">&#9998; PERLU REVISI</a>\n<p style=\"margin:14px 0 0;color:#94a3b8;font-size:11px\">Link otomatis kadaluarsa dalam 3 hari &bull; Jangan forward email ini &bull; Workflow ID: {{ $execution.id }}</p>\n</div>\n</div>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "56c18ef2-3f7a-4358-8ac5-9b2e20661b2d",
+      "name": "Gmail: Kirim Approval (Revisi)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3100,
+        740
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GANTI_ID_CREDENTIAL_GMAIL",
+          "name": "Gmail Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "options": {
+          "limitWaitTime": true,
+          "limitType": "afterTimeInterval",
+          "resumeAmount": 3,
+          "resumeUnit": "days"
+        }
+      },
+      "id": "d21feab9-a802-419a-8ca8-5bd8e1c40394",
+      "name": "Wait: Tunggu Approval (Revisi)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3340,
+        740
+      ],
+      "webhookId": "b5ee736e-e283-497f-82b5-78b92e97627d"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "2771cba5-45d5-4492-8e54-534c5fab901f",
+              "leftValue": "={{ $json.query.status }}",
+              "rightValue": "approved",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "166e5e86-0891-43fd-837a-9acce47dca57",
+      "name": "IF: Approved? (Revisi)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3580,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4bc2909b-ffb9-4245-a65d-efc201e42622",
+              "name": "status",
+              "value": "revision_limit_reached",
+              "type": "string"
+            },
+            {
+              "id": "d88ec7a7-57f2-43b3-b7e1-18427be683f6",
+              "name": "message",
+              "value": "Konten ditolak 2x berturut-turut. Workflow dihentikan. Jalankan ulang secara manual untuk topik baru.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5b397a85-e132-4d0e-ad04-6c2c26c2fa05",
+      "name": "Set: Revisi Limit",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3820,
+        820
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Variables": {
+      "main": [
+        [
+          {
+            "node": "IF: AI atau Manual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF: AI atau Manual": {
+      "main": [
+        [
+          {
+            "node": "Code: Build Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set: Manual Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Build Prompt": {
+      "main": [
+        [
+          {
+            "node": "HTTP: OpenAI Generate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP: OpenAI Generate": {
+      "main": [
+        [
+          {
+            "node": "Code: Parse Konten",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set: Manual Content": {
+      "main": [
+        [
+          {
+            "node": "Code: Parse Konten",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Parse Konten": {
+      "main": [
+        [
+          {
+            "node": "Gmail: Kirim Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail: Kirim Approval": {
+      "main": [
+        [
+          {
+            "node": "Wait: Tunggu Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait: Tunggu Approval": {
+      "main": [
+        [
+          {
+            "node": "IF: Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF: Approved?": {
+      "main": [
+        [
+          {
+            "node": "Code: Prepare Publish",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Prepare Revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Prepare Publish": {
+      "main": [
+        [
+          {
+            "node": "HTTP: Instagram Create Container",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP: Instagram Create Container": {
+      "main": [
+        [
+          {
+            "node": "HTTP: Instagram Publish",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP: Instagram Publish": {
+      "main": [
+        [
+          {
+            "node": "HTTP: LinkedIn Publish",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP: LinkedIn Publish": {
+      "main": [
+        [
+          {
+            "node": "HTTP: Facebook Publish",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP: Facebook Publish": {
+      "main": [
+        [
+          {
+            "node": "HTTP: Threads Ayrshare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP: Threads Ayrshare": {
+      "main": [
+        [
+          {
+            "node": "Gmail: Send Report",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets: Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Prepare Revision": {
+      "main": [
+        [
+          {
+            "node": "HTTP: OpenAI Revise",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP: OpenAI Revise": {
+      "main": [
+        [
+          {
+            "node": "Code: Parse Revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Parse Revision": {
+      "main": [
+        [
+          {
+            "node": "Gmail: Kirim Approval (Revisi)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail: Kirim Approval (Revisi)": {
+      "main": [
+        [
+          {
+            "node": "Wait: Tunggu Approval (Revisi)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait: Tunggu Approval (Revisi)": {
+      "main": [
+        [
+          {
+            "node": "IF: Approved? (Revisi)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF: Approved? (Revisi)": {
+      "main": [
+        [
+          {
+            "node": "Code: Prepare Publish",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set: Revisi Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "versionId": "13484631-ece0-4643-aaab-34a1057fdf2e",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": ""
+  },
+  "id": "dab9de46-28eb-4a00-9b68-09356ce068c2",
+  "tags": [
+    {
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z",
+      "id": "1",
+      "name": "social-media"
+    },
+    {
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z",
+      "id": "2",
+      "name": "automation"
+    },
+    {
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z",
+      "id": "3",
+      "name": "ai-content"
+    }
+  ]
+}
